@@ -1,0 +1,51 @@
+
+
+
+        <!--/.Row-->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="panel panel-info">
+                            <div class="panel-heading">
+                            新增文章
+                            </div>
+                            <div class="panel-body">
+                                <form role="form" method="POST" action="/article_add" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label>文章标题</label>
+                                        <input class="form-control" type="text" name="Artiname">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>文章类型</label>
+                                        <select class="form-control" name="AType">
+                                            <option value="0">公司新闻</option>
+                                            <option value="1">行业新闻</option value="0">
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>文章内容</label>
+                                        <textarea class="form-control" rows="3" name="Acontent"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="control-label col-lg-4">新闻图片</label>
+                                        <div class="">
+                                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                                <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"></div>
+                                                <div>
+                                                    <span class="btn btn-file btn-success"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span><input type="file"></span>
+                                                    <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">Remove</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-info">提交 </button>
+
+                                </form>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--/.Row-->
