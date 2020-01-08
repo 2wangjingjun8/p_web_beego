@@ -140,38 +140,3 @@ func (c *MainController) ShowIndex() {
 func (c *MainController) HandleIndex() {
 
 }
-
-func (c *MainController) ShowArticle() {
-	c.Layout = "base/layout.html"
-	c.TplName = "article_list.html"
-	c.LayoutSections = make(map[string]string)
-	c.LayoutSections["Sidebar"] = "base/nav.html"
-	c.Data["page_head"] = "文章列表"
-}
-
-func (c *MainController) ShowAddArticle() {
-	c.Layout = "base/layout.html"
-	c.TplName = "article_add.html"
-	c.LayoutSections = make(map[string]string)
-	c.LayoutSections["Sidebar"] = "base/nav.html"
-	c.Data["page_head"] = "新增文章"
-}
-
-func (c *MainController) HandleAddArticle() {
-	Artiname := c.GetString("Artiname")
-	AType := c.GetString("AType")
-	Acontent := c.GetString("Acontent")
-	beego.Info(Artiname, AType, Acontent)
-}
-
-func (c *MainController) ShowEditArticle() {
-	c.Layout = "base/layout.html"
-	c.TplName = "article_edit.html"
-	c.LayoutSections = make(map[string]string)
-	c.LayoutSections["Sidebar"] = "base/nav.html"
-	c.Data["page_head"] = "更新文章"
-}
-func (c *MainController) HandleEditArticle() {
-	Artiname := c.GetString("Artiname")
-	beego.Info(Artiname)
-}

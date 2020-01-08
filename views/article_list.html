@@ -16,16 +16,18 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {{range .articles}}
                                     <tr>
-                                        <td>1</td>
-                                        <td>快船26分惨负灰熊</td>
-                                        <td>22</td>
-                                        <td>2020-01-07 11:00:00</td>
-                                        <td> <img src="static/img/user.gif" alt="" width="60" height="60" > </td>
+                                        <td>{{.ID}}</td>
+                                        <td> <a href="/article_detail?id={{.ID}}">{{.Artiname}}</a> </td>
+                                        <td>{{.Acount}}</td>
+                                        <td>{{.Atime.Format "2006-01-02 15:04:05"}}</td>
+                                        <td> <img src="{{.Aimg}}" alt="" width="60" height="60" > </td>
                                         <td>
                                             <a class="btn btn-primary" href="/article_edit"><i class="glyphicon glyphicon-search"></i>Edit</a>
                                             <a class="btn btn-danger"><i class="glyphicon glyphicon-home"></i>Delete</a></td>
                                     </tr>
+                                    {{end}}
                                 </tbody>
                             </table>
                         </div>

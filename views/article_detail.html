@@ -1,0 +1,45 @@
+
+
+
+        <!--/.Row-->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="panel panel-info">
+                            <div class="panel-heading">
+                            文章详情
+                            </div>
+                            <div class="panel-body">
+                                    <div class="form-group">
+                                        <label>文章标题</label>
+                                        <p>{{.article.Artiname}}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>发布时间</label>
+                                        <p>{{.article.Atime.Format "2006-01-02 15:04:05" }}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>点击数</label>
+                                        <p>{{.article.Acount}}</p>
+                                    </div>
+                                    
+                                    <!-- <div class="form-group">
+                                        <label>文章类型</label>
+                                        <p> </p>
+                                    </div> -->
+                                    
+                                    <div class="form-group">
+                                        <label>新闻图片</label>
+                                        <p><img src="{{.article.Aimg}}" alt="" width="100%"> </p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>文章内容</label>
+                                        <p>{{.article.Acontent}}</p>
+                                    </div>
+
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--/.Row-->

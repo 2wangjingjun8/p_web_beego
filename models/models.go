@@ -16,10 +16,10 @@ type User struct {
 
 // Article 文章表
 type Article struct {
-	ID       int    `orm:"pk;auto"`
-	Artiname string `orm:"size(20)"`
-	Atime    time.Time
-	Acount   int `orm:"default(20);null"`
+	ID       int       `orm:"pk;auto"`
+	Artiname string    `orm:"size(20)"`
+	Atime    time.Time `orm:"auto_now"`
+	Acount   int       `orm:"default(20);null"`
 	Acontent string
 	Aimg     string
 }
