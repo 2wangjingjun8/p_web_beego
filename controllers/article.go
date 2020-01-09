@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"math"
 	"p_web/models"
 	"path"
+	"strconv"
 	"time"
-	"math"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -13,6 +14,15 @@ import (
 // ArticleController is a struct
 type ArticleController struct {
 	beego.Controller
+}
+
+// SelectArticle 选择文章类型
+func (c *ArticleController) SelectArticle() {
+	TypeID := c.GetString("TypeID")
+	o := orm.NewOrm()
+	var articles []models.Article
+	o.QueryTable("Article").RelatedSel("ArticleType").Filter("ArticleType__ID", TypeID).All(&articles)
+	beego.Info(articles)
 }
 
 // ShowArticle 文章列表
@@ -26,26 +36,26 @@ func (c *ArticleController) ShowArticle() {
 
 	o := orm.NewOrm()
 	var articles []models.Article
-	qs := o.QueryTable("Article")
-	count,_ := qs.Count()
+	qs := o.QueryTable("Article").RelatedSel("ArticleType")
+	count, _ := qs.Count()
 	pagesize := 2
 	// 总页码
-	pageNum := math.Ceil(float64(count)/float64(pagesize))
-	pageIndex,err := c.GetInt("page")
-	beego.Info(pageIndex)
-	beego.Info(err)
+	pageNum := math.Ceil(float64(count) / float64(pagesize))
+	pageIndex, err := c.GetInt("page")
 	start := pagesize * (pageIndex - 1)
 	_, err = qs.Limit(pagesize, start).All(&articles)
-	// _, err := qs.All(&articles)
 	if err != nil {
 		beego.Info("查询数据失败", err)
 		return
 	}
-	beego.Info(articles)
+	var aType []models.ArticleType
+	_, err = o.QueryTable("ArticleType").All(&aType)
+
 	c.Data["articles"] = articles
 	c.Data["count"] = count
 	c.Data["pageNum"] = pageNum
 	c.Data["pageIndex"] = pageIndex
+	c.Data["aType"] = aType
 
 	preIndex := pageIndex - 1
 	if preIndex <= 0 {
@@ -66,6 +76,10 @@ func (c *ArticleController) ShowAddArticle() {
 	c.LayoutSections = make(map[string]string)
 	c.LayoutSections["Sidebar"] = "base/nav.html"
 	c.Data["page_head"] = "新增文章"
+	o := orm.NewOrm()
+	var aType []models.ArticleType
+	o.QueryTable("ArticleType").All(&aType)
+	c.Data["aType"] = aType
 }
 
 // HandleAddArticle 处理文章添加
@@ -97,9 +111,15 @@ func (c *ArticleController) HandleAddArticle() {
 			// Arti.AType = AType
 			Arti.Acontent = Acontent
 			Arti.Aimg = "/static/img/" + filename
+			var ArticleType models.ArticleType
+			TypeID := c.GetString("TypeID")
+			ArticleType.ID, _ = strconv.Atoi(TypeID)
+			o.Read(&ArticleType)
+
+			Arti.ArticleType = &ArticleType
 			_, err = o.Insert(&Arti)
 			if err != nil {
-				beego.Info("插入数据失败",err)
+				beego.Info("插入数据失败", err)
 				return
 			}
 			c.Redirect("/article_list", 302)
@@ -190,7 +210,6 @@ func (c *ArticleController) HandleEditArticle() {
 			beego.Info(filename)
 			c.SaveToFile("img", "./static/img/"+filename)
 
-
 		} else {
 			beego.Info("图片格式不正确")
 			return
@@ -201,25 +220,24 @@ func (c *ArticleController) HandleEditArticle() {
 		}
 	}
 
-
 	o := orm.NewOrm()
 	Arti := models.Article{ID: id}
 	err = o.Read(&Arti)
 	if err != nil {
 		beego.Info("获取数据错误")
 	}
-	
+
 	Arti.Artiname = Artiname
 	// Arti.AType = AType
 	Arti.Acontent = Acontent
 	if filename != "" {
 		Arti.Aimg = "/static/img/" + filename
-	}else{
+	} else {
 		Arti.Aimg = c.GetString("img_old")
 	}
-	_, err = o.Update(&Arti,"Artiname","Acontent","Aimg")
+	_, err = o.Update(&Arti, "Artiname", "Acontent", "Aimg")
 	if err != nil {
-		beego.Info("更新数据失败",err)
+		beego.Info("更新数据失败", err)
 		return
 	}
 	c.Redirect("/article_list", 302)
@@ -227,60 +245,22 @@ func (c *ArticleController) HandleEditArticle() {
 }
 
 // HandleArticleDel 处理文章删除
-func (c *ArticleController) HandleArticleDel()  {
+func (c *ArticleController) HandleArticleDel() {
 	id, err := c.GetInt("id")
 	if err != nil {
 		beego.Info("获取参数错误", err)
 	}
-	o:= orm.NewOrm()
-	arti := models.Article{ID:id}
+	o := orm.NewOrm()
+	arti := models.Article{ID: id}
 	err = o.Read(&arti)
-	if err != nil{
+	if err != nil {
 		beego.Info("获取数据错误")
 	}
-	_,err = o.Delete(&arti)
+	_, err = o.Delete(&arti)
 	if err != nil {
-		beego.Info("删除数据失败",err)
+		beego.Info("删除数据失败", err)
 		return
 	}
 	c.Redirect("/article_list", 302)
-	
-}
-
-// ShowArticleType 文章分类显示
-func (c *ArticleController) ShowArticleType()  {
-	c.Layout = "base/layout.html"
-	c.LayoutSections = make(map[string]string)
-	c.LayoutSections["Sidebar"] = "base/nav.html"
-	c.Data["page_head"] = "文章分类列表"
-	c.TplName = "article_add_type.html"
-	// 查询分类信息
-	o :=orm.NewOrm()
-	var ArticleTypes []*models.ArticleType
-	qs := o.QueryTable("ArticleType")
-	_, err := qs.All(&ArticleTypes)
-	if err != nil{
-		beego.Info("没有分类数据")
-	}
-	c.Data["ArticleTypes"] = ArticleTypes
-
-}
-
-// HandleArticleType 文章分类添加
-func (c *ArticleController) HandleArticleType()  {
-	Atype := c.GetString("Atype")
-	beego.Info(Atype)
-	if Atype == "" {
-		beego.Info("数据不能为空")
-	}else{
-		o :=orm.NewOrm()
-		ArticleType := models.ArticleType{}
-		ArticleType.TypeName = Atype
-		_,err := o.Insert(&ArticleType)
-		if err != nil{
-			beego.Info("插入数据失败")
-		}
-	}
-	c.Redirect("/atype_add",302)
 
 }
