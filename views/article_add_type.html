@@ -1,0 +1,49 @@
+                <!--/.Row-->
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <form action="/atype_add" method="post">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="Atype">
+                                    <span class="form-group input-group-btn">
+                                        <button class="btn btn-default" type="submit">新增分类</button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>文章分类名称</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{range .ArticleTypes}}
+                                    <tr>
+                                        <td>{{.ID}}</td>
+                                        <td>{{.TypeName}}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="/article_edit?id={{.ID}}"><i class="glyphicon glyphicon-search"></i>Edit</a>
+                                            <a class="btn btn-danger delConfirm" href="/article_del?id={{.ID}}"><i class="glyphicon glyphicon-home"></i>Delete</a></td>
+                                    </tr>
+                                    {{end}}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--/.Row-->
+                <script>
+                window.onload = function(){
+                    $(".delConfirm").click(function(){
+                        if(!confirm("是否确认删除？")){
+                            return false
+                        }
+                    })
+                }
+                </script>

@@ -123,7 +123,8 @@ func (c *MainController) HandleLogin() {
 		return
 	} else {
 		if user.Password == password {
-			c.Ctx.WriteString("登录成功")
+			// c.Ctx.WriteString("登录成功")
+			c.Redirect("/index",302)
 		} else {
 			c.Ctx.WriteString("密码错误")
 			c.Redirect("/login", 302)

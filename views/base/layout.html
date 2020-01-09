@@ -26,7 +26,9 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-head-line">{{.page_head}}</h1>
-                        <h1 class="page-subhead-line">This is dummy text , you can replace it with your original text. </h1>
+                        {{if .addurl }}
+                        <h1 class="page-subhead-line"> <a class="btn btn-info" href="{{.addurl}}">新增</a> </h1>
+                        {{end}}
                     </div>
                     </div>
                 {{.LayoutContent}}

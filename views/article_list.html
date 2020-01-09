@@ -24,17 +24,42 @@
                                         <td>{{.Atime.Format "2006-01-02 15:04:05"}}</td>
                                         <td> <img src="{{.Aimg}}" alt="" width="60" height="60" > </td>
                                         <td>
-                                            <a class="btn btn-primary" href="/article_edit"><i class="glyphicon glyphicon-search"></i>Edit</a>
-                                            <a class="btn btn-danger"><i class="glyphicon glyphicon-home"></i>Delete</a></td>
+                                            <a class="btn btn-primary" href="/article_edit?id={{.ID}}"><i class="glyphicon glyphicon-search"></i>Edit</a>
+                                            <a class="btn btn-danger delConfirm" href="/article_del?id={{.ID}}"><i class="glyphicon glyphicon-home"></i>Delete</a></td>
                                     </tr>
                                     {{end}}
                                 </tbody>
                             </table>
                         </div>
 
+                        <ul class="pager">
+                            <li><a href="/article_list?page=1">首页</a></li>
+                            {{if compare .pageIndex 1}}
+                            <li>上一页</li>
+                            {{else}}
+                            <li><a href="/article_list?page={{.preIndex}}">上一页</a></li>
+                            {{end}}
+                            
+                            {{if compare .pageIndex .pageNum}}
+                            <li>下一页</li>
+                            {{else}}
+                            <li><a href="/article_list?page={{.nextIndex}}">下一页</a></li>
+                            {{end}}
 
+                            <li><a href="/article_list?page={{.pageNum}}">末页</a></li>
+                            <span>总共{{.count}}条，共{{.pageNum}}页，当前第{{.pageIndex}}页</span>
+                        </ul>
 
 
                     </div>
                 </div>
                 <!--/.Row-->
+                <script>
+                window.onload = function(){
+                    $(".delConfirm").click(function(){
+                        if(!confirm("是否确认删除？")){
+                            return false
+                        }
+                    })
+                }
+                </script>
