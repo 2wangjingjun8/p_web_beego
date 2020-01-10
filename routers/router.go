@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	beego.InsertFilter("/article*",beego.BeforeRouter, filterFunc)
+	beego.InsertFilter("/article*", beego.BeforeRouter, filterFunc)
 	beego.Router("/", &controllers.UserController{}, "get:ShowLogin;post:HandleLogin")
 	beego.Router("/index", &controllers.MainController{}, "get:ShowIndex;post:HandleIndex")
 
@@ -26,16 +26,9 @@ func init() {
 
 }
 
-// var filterFunc = func (c *context.Context)  {
-// 	username := c.Input.Session("username")
-// 	if username ==nil{
-// 		c.Redirect(302, "/login")
-// 	}
-// }
-
-var filterFunc = func(ctx *context.Context){
+var filterFunc = func(ctx *context.Context) {
 	username := ctx.Input.Session("username")
-	if username==nil{
-	ctx.Redirect(302,"/login")
+	if username == nil {
+		ctx.Redirect(302, "/login")
 	}
 }

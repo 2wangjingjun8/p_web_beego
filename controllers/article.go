@@ -42,7 +42,7 @@ func (c *ArticleController) ShowArticle() {
 	var count int64
 	if TypeID == "" {
 		count, _ = qs.Count()
-	}else{
+	} else {
 		count, _ = qs.Filter("ArticleType__ID", TypeID).Count()
 	}
 
@@ -55,13 +55,12 @@ func (c *ArticleController) ShowArticle() {
 		pageIndex = 1
 	}
 	start := pagesize * (pageIndex - 1)
-	
+
 	if TypeID == "" {
 		qs.Limit(pagesize, start).All(&articles)
-	}else{
+	} else {
 		qs.Limit(pagesize, start).Filter("ArticleType__ID", TypeID).All(&articles)
 	}
-	
 
 	var aType []models.ArticleType
 	o.QueryTable("ArticleType").All(&aType)
@@ -160,11 +159,36 @@ func (c *ArticleController) ShowArticleDetail() {
 	beego.Info("id", id)
 	o := orm.NewOrm()
 	article := models.Article{ID: id}
-	err = o.Read(&article)
+	err = o.QueryTable("Article").RelatedSel("ArticleType").One(&article)
 	if err != nil {
 		beego.Info("获取数据错误")
 	}
 	beego.Info("article", article)
+	// 点击数更新
+	article.Acount++
+	_, err = o.Update(&article)
+	if err != nil {
+		beego.Info("更新点击数错误")
+	}
+	// 多对多插入，user
+	// 1 获取多对多操对象
+	m2m := o.QueryM2M(&article, "Users")
+	// 2 获取插入对象
+	username := c.GetSession("username").(string)
+	beego.Info(username)
+	var user = models.User{UserName: username}
+	o.Read(&user, "UserName")
+	// 3 多对多插入
+	_, err = m2m.Add(&user)
+	if err != nil {
+		beego.Info("插入多对多失败")
+	}
+	// 多对多查询
+	// o.QueryTable("Article").Filter("Users__User__UserName", username).Distinct().Filter("ID", id).One(&article)
+	// err = o.Read(&article)
+
+	beego.Info(username)
+	o.LoadRelated(&article, "Users")
 
 	c.Layout = "base/layout.html"
 	c.TplName = "article_detail.html"
