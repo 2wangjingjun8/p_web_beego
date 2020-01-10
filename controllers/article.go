@@ -34,28 +34,44 @@ func (c *ArticleController) ShowArticle() {
 	c.Data["page_head"] = "文章列表"
 	c.Data["addurl"] = "/article_add"
 
+	TypeID := c.GetString("TypeID")
 	o := orm.NewOrm()
 	var articles []models.Article
 	qs := o.QueryTable("Article").RelatedSel("ArticleType")
-	count, _ := qs.Count()
+
+	var count int64
+	if TypeID == "" {
+		count, _ = qs.Count()
+	}else{
+		count, _ = qs.Filter("ArticleType__ID", TypeID).Count()
+	}
+
 	pagesize := 2
 	// 总页码
 	pageNum := math.Ceil(float64(count) / float64(pagesize))
-	pageIndex, err := c.GetInt("page")
-	start := pagesize * (pageIndex - 1)
-	_, err = qs.Limit(pagesize, start).All(&articles)
-	if err != nil {
-		beego.Info("查询数据失败", err)
-		return
+	pageIndex, _ := c.GetInt("page")
+	beego.Info(pageIndex)
+	if pageIndex == 0 {
+		pageIndex = 1
 	}
+	start := pagesize * (pageIndex - 1)
+	
+	if TypeID == "" {
+		qs.Limit(pagesize, start).All(&articles)
+	}else{
+		qs.Limit(pagesize, start).Filter("ArticleType__ID", TypeID).All(&articles)
+	}
+	
+
 	var aType []models.ArticleType
-	_, err = o.QueryTable("ArticleType").All(&aType)
+	o.QueryTable("ArticleType").All(&aType)
 
 	c.Data["articles"] = articles
 	c.Data["count"] = count
 	c.Data["pageNum"] = pageNum
 	c.Data["pageIndex"] = pageIndex
 	c.Data["aType"] = aType
+	c.Data["TypeID"] = TypeID
 
 	preIndex := pageIndex - 1
 	if preIndex <= 0 {

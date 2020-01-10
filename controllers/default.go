@@ -100,44 +100,20 @@ func (c *MainController) Post() {
 	// c.TplName = "register.html"
 }
 
-func (c *MainController) ShowLogin() {
-	c.TplName = "login.html"
-}
-
-func (c *MainController) HandleLogin() {
-	username := c.GetString("username")
-	password := c.GetString("password")
-	if username == "" || password == "" {
-		beego.Info("数据不能为空！")
-		c.Redirect("/login", 302)
-		return
-	}
-	o := orm.NewOrm()
-	user := models.User{}
-	user.UserName = username
-	err := o.Read(&user, "UserName")
-	beego.Info(user)
-	if err != nil {
-		beego.Info("账号不存在", err)
-		c.Redirect("/login", 302)
-		return
-	} else {
-		if user.Password == password {
-			// c.Ctx.WriteString("登录成功")
-			c.Redirect("/index",302)
-		} else {
-			c.Ctx.WriteString("密码错误")
-			c.Redirect("/login", 302)
-			return
-		}
-	}
-
-}
-
+// ShowIndex 首页
 func (c *MainController) ShowIndex() {
+	// username := c.GetSession("username")
+	// if username == nil {
+	// 	c.Redirect("/login",302)
+	// }
 	c.TplName = "index.html"
+	c.Layout = "base/layout.html"
+	c.LayoutSections = make(map[string]string)
+	c.LayoutSections["Sidebar"] = "base/nav.html"
+	c.Data["page_head"] = "首页"
 }
 
+// HandleIndex 处理首页
 func (c *MainController) HandleIndex() {
 
 }

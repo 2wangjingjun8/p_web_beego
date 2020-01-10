@@ -1,9 +1,15 @@
                 
-                <form class="form-group col-md-2" id="form" method="POST" action="/article_list">
+                <form class="form-group col-md-2" id="form" method="GET" action="/article_list">
                     <label>选择文章类型</label>
                     <select class="form-control" id="select" name="TypeID">
-                        {{range .aType}}
-                        <option value="{{.ID}}">{{.TypeName}}</option>
+                        <option value="">全部新闻</option>
+                        {{range $index,$val := .aType}}
+                        {{if compare $.TypeID $val.ID}}
+                        <option value="{{$val.ID}}" selected>{{$val.TypeName}}</option>
+                        {{else}}
+                        <option value="{{$val.ID}}">{{$val.TypeName}}</option>
+                        {{end}}
+                        
                         {{end}}
                     </select>
                 </form>
@@ -44,20 +50,20 @@
                         </div>
 
                         <ul class="pager">
-                            <li><a href="/article_list?page=1">首页</a></li>
+                            <li><a href="/article_list?page=1&TypeID={{.TypeID}}">首页</a></li>
                             {{if compare .pageIndex 1}}
                             <li>上一页</li>
                             {{else}}
-                            <li><a href="/article_list?page={{.preIndex}}">上一页</a></li>
+                            <li><a href="/article_list?page={{.preIndex}}&TypeID={{.TypeID}}">上一页</a></li>
                             {{end}}
                             
                             {{if compare .pageIndex .pageNum}}
                             <li>下一页</li>
                             {{else}}
-                            <li><a href="/article_list?page={{.nextIndex}}">下一页</a></li>
+                            <li><a href="/article_list?page={{.nextIndex}}&TypeID={{.TypeID}}">下一页</a></li>
                             {{end}}
 
-                            <li><a href="/article_list?page={{.pageNum}}">末页</a></li>
+                            <li><a href="/article_list?page={{.pageNum}}&TypeID={{.TypeID}}">末页</a></li>
                             <span>总共{{.count}}条，共{{.pageNum}}页，当前第{{.pageIndex}}页</span>
                         </ul>
 
