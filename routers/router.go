@@ -24,6 +24,8 @@ func init() {
 	// 文章类型管理模块
 	beego.Router("/atype_add", &controllers.ArticleTypeController{}, "get:ShowArticleType;post:HandleArticleType")
 
+	beego.Router("/redis", &controllers.RedisDemoController{})
+
 }
 
 var filterFunc = func(ctx *context.Context) {

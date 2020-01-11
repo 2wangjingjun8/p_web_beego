@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/gob"
 	"math"
 	"p_web/models"
 	"path"
@@ -9,6 +11,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/gomodule/redigo/redis"
 )
 
 // ArticleController is a struct
@@ -63,7 +66,49 @@ func (c *ArticleController) ShowArticle() {
 	}
 
 	var aType []models.ArticleType
-	o.QueryTable("ArticleType").All(&aType)
+	// redis 在就获取，不再就存储
+	// conn, err := redis.Dial("tcp", ":6379")
+	// if err != nil {
+	// 	beego.Info("redis连接失败")
+	// }
+	// defer conn.Close()
+	// reply, err := conn.Do("set", "atype", aType)
+	// if err != nil {
+	// 	beego.Info("redis存储失败")
+	// }
+	// beego.Info(reply)
+
+	// 序列化与发序列化
+	conn, err := redis.Dial("tcp", ":6379")
+	if err != nil {
+		beego.Info("redis连接失败")
+	}
+	defer conn.Close()
+	ok, _ := redis.Bool(conn.Do("EXISTS", "atype"))
+	beego.Info(ok)
+	if ok == true {
+		ReadBuffer, _ := redis.Bytes(conn.Do("get", "atype"))
+		beego.Info(ReadBuffer)
+		dec := gob.NewDecoder(bytes.NewReader(ReadBuffer))
+		err = dec.Decode(&aType)
+		if err != nil {
+			beego.Info("获取不到解码后的数据:", err)
+		}
+		beego.Info(aType)
+	} else {
+		// 查询
+		o.QueryTable("ArticleType").All(&aType)
+
+		// redis存储序列化的数据
+		var buffer bytes.Buffer
+		enc := gob.NewEncoder(&buffer)
+		err = enc.Encode(aType)
+		reply, err := conn.Do("set", "atype", buffer.Bytes())
+		if err != nil {
+			beego.Info("redis存储失败")
+		}
+		beego.Info(reply)
+	}
 
 	c.Data["articles"] = articles
 	c.Data["count"] = count
